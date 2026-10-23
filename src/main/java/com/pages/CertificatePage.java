@@ -39,7 +39,48 @@ public class CertificatePage {
 
 	@AndroidFindBy(uiAutomator = "new UiSelector().text(\"New learner · Digital Marketing Sprint\")")
 	public WebElement Course;
-
+	
+	@AndroidFindBy(uiAutomator = "new UiSelector().text(\"Refresh\").instance(1)")
+	public WebElement refresh;
+	
+	@AndroidFindBy(uiAutomator = "new UiSelector().text(\"Refunds\")")
+	public WebElement refund;
+	
+	@AndroidFindBy(uiAutomator = "new UiSelector().text(\"Certificates\")")
+	public WebElement certificate;
+	
+	@AndroidFindBy(xpath = "//*[contains(@text,'37')]")
+	public WebElement revokeCount;
+	
+	@AndroidFindBy(xpath = "//*[contains(@text,'revoked')]")
+	public WebElement revokedCertificatestotal;
+	
+	@AndroidFindBy(uiAutomator = "new UiSelector().text(\"Payouts\")")
+	public WebElement payout;
+	
+	@AndroidFindBy(uiAutomator = "new UiSelector().text(\"Audit\")")
+	public WebElement audit;
+	
+	@AndroidFindBy(xpath = "//*[@text='Audit']")
+	public WebElement auditModule;
+	
+	@AndroidFindBy(xpath = "//android.view.ViewGroup[starts-with(@resource-id,'a-tab')]")
+	public WebElement tabRow;
+	
 	@AndroidFindBy(uiAutomator = "new UiSelector().text(\"No certificates found\")")
 	public WebElement noCertificateMessage;
+	
+	@AndroidFindBy(xpath = "//android.widget.FrameLayout[@resource-id=\"android:id/content\"]/android.widget.FrameLayout/android.view.ViewGroup/android.view.ViewGroup/android.view.ViewGroup/android.widget.ScrollView/android.view.ViewGroup/android.view.ViewGroup/android.widget.ScrollView/android.view.ViewGroup/android.view.ViewGroup[18]")
+	public WebElement revokedCardCount;
+	
+	@AndroidFindBy(xpath = "//android.widget.TextView[@text='revoked']")
+	public WebElement revokedStatus;
+	
+	@AndroidFindBy(xpath = "//android.widget.TextView[contains(@text,'CZ-CERT-')]")
+	public WebElement certID;
+	@AndroidFindBy(xpath = "./ancestor::android.view.ViewGroup[.//android.widget.TextView[contains(@text,'CERT-')]][1]"+ "//android.widget.TextView[contains(@text,'CERT-')]\"")
+	public WebElement rowID;
+	
+	
+	//android.widget.TextView[@text='Revoked']/preceding-sibling::android.widget.TextView[15]
 }

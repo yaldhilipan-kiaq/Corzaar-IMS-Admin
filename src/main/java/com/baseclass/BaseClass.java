@@ -3,9 +3,12 @@ package com.baseclass;
 import java.awt.Rectangle;
 import java.io.File;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Dimension;
@@ -31,6 +34,11 @@ public class BaseClass {
 		wait.until(ExpectedConditions.elementToBeClickable(element));
 
 		element.click();
+	}
+
+	public static void relaunchApp(AndroidDriver driver) {
+		driver.terminateApp("com.corzaar.app");
+		driver.activateApp("com.corzaar.app");
 	}
 
 	public static void sendKeys(AndroidDriver driver, WebElement element, String text) {
@@ -77,7 +85,7 @@ public class BaseClass {
 	public static void swipeUp(AndroidDriver driver) {
 
 		driver.executeScript("mobile: swipeGesture",
-				Map.of("left", 100, "top", 100, "width", 200, "height", 600, "direction", "up", "percent", 0.75));
+				Map.of("left", 100, "top", 300, "width", 800, "height", 1000, "direction", "up", "percent", 0.75));
 	}
 
 	public static void swipeDown(AndroidDriver driver) {
@@ -90,13 +98,32 @@ public class BaseClass {
 
 		org.openqa.selenium.Dimension size = driver.manage().window().getSize();
 		int x = size.width / 2;
-		int startY = (int) (size.height * 0.80);
-		int endY = (int) (size.height * 0.60);
+		int startY = (int) (size.height * 0.75);
+		int endY = (int) (size.height * 0.20);
 
-		driver.executeScript("mobile:swipeGesture",
-				Map.of("left", x - 10, "top", endY, "width", 20, "height", startY - endY), "direction", "up", "percent",
-				0.8);
+		PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+		Sequence swipe = new Sequence(finger, 1);
+		swipe.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), x, startY));
+		swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+		swipe.addAction(finger.createPointerMove(Duration.ofMillis(700), PointerInput.Origin.viewport(), x, endY));
+		swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+		driver.perform(Collections.singletonList(swipe));
 
+	}
+
+	public static void swipeUntillVisible(AndroidDriver driver, WebElement element, WebElement tabRow) {
+
+		for (int i = 0; i < 6 && !isShown(element); i++) {
+			swipeLeft(driver, tabRow);
+		}
+	}
+
+	public static boolean isShown(WebElement element) {
+		try {
+			return element.isDisplayed();
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	public static void MobileswipeDown(AndroidDriver driver) {
@@ -131,20 +158,20 @@ public class BaseClass {
 
 	}
 
-	public static void swipeLeft(AndroidDriver driver) {
+	public static void swipeLeft(AndroidDriver driver, WebElement tabRow) {
 
-		Dimension size = driver.manage().window().getSize();
+		org.openqa.selenium.Dimension size = driver.manage().window().getSize();
+		int y = tabRow.getLocation().getY() + tabRow.getSize().getHeight() / 2;
+		int startX = (int) (size.width * 0.80);
+		int endX = (int) (size.width * 0.20);
 
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("left", (int) (size.width * 0.05));
-		params.put("top", (int) (size.height * 0.66));
-		params.put("width", (int) (size.width * 0.90));
-		params.put("height", (int) (size.height * 0.06));
-		params.put("direction", "left");
-		params.put("percent", 0.50);
-
-		boolean canScroll = (Boolean) driver.executeScript("mobile: scrollGesture", params);
-		System.out.println("Scrollable - " + canScroll);
+		PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+		Sequence swipe = new Sequence(finger, 1);
+		swipe.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, y));
+		swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+		swipe.addAction(finger.createPointerMove(Duration.ofMillis(600), PointerInput.Origin.viewport(), endX, y));
+		swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+		driver.perform(List.of(swipe));
 	}
 
 	public static void swipeabove(AndroidDriver driver) {
@@ -162,5 +189,52 @@ public class BaseClass {
 
 		driver.executeScript("mobile: swipeGesture", params);
 	}
+
+	public void ScrollLeft(AndroidDriver driver) {
+
+		org.openqa.selenium.Dimension size = driver.manage().window().getSize();
+		int y = (int) (size.getHeight() * 0.42);
+		int startX = (int) (size.getWidth() * 0.85);
+		int endX = (int) (size.getWidth() * 0.15);
+		PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+		Sequence swipe = new Sequence(finger, 1);
+		swipe.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, y));
+		swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+		swipe.addAction(finger.createPointerMove(Duration.ofMillis(700), PointerInput.Origin.viewport(), endX, y));
+		swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+		java.util.List<Sequence> actions = new ArrayList<>();
+		actions.add(swipe);
+		driver.perform(actions);
+	}
+
+	public void scrollUntilvisible(AndroidDriver driver, WebElement element) {
+		int screenWWidth = driver.manage().window().getSize().getWidth();
+		System.out.println("Screen Width: " + screenWWidth);
+		for (int i = 0; i < 10; i++) {
+
+			try {
+				org.openqa.selenium.Rectangle rect = element.getRect();
+				System.out.println("Try " + i + "-> X=" + rect.getX() + "width=" + rect.getWidth());
+				int centerX = rect.getX() + rect.getWidth() / 2;
+				if (centerX > 0 && centerX < screenWWidth) {
+					return;
+
+				}
+			} catch (Exception e) {
+				System.out.println("Try" + i + "-> Not found: " + e.getClass().getSimpleName());
+			}
+			ScrollLeft(driver);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ignored) {
+
+			}
+			throw new NoSuchElementException("Category not visible after swiping");
+		}
+
+	}
+	
+	
+	
 
 }

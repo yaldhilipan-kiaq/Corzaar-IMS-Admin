@@ -22,3 +22,8 @@ Feature: CORZAAR IMS Mobile Application
   Scenario: Verify Certificates by using Valid Course Name
     Given User Search Certificate by course name
     Then Certificate is displayed for the respected Course
+
+  Scenario: Verify Revoked certificates
+    Given User is on Certificates page
+    When User verifies Revoked certificates
+    Then User verifies the Total revoked certificate count

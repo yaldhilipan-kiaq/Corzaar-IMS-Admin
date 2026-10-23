@@ -1,6 +1,12 @@
 package com.stepdefinitions;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebElement;
 
 import com.baseclass.BaseClass;
 import com.driver.DeviceSessionManager;
@@ -23,13 +29,14 @@ public class CertificateSteps extends BaseClass {
 
 	@When("User navigates to Certificate module")
 	public void user_navigates_to_certificate_module() {
-		swipeLeft(DeviceSessionManager.getDriver());
+		swipeUntillVisible(DeviceSessionManager.getDriver(), cert.auditModule, cert.tabRow);
+
 		click(DeviceSessionManager.getDriver(), cert.CertificateModule);
 	}
 
 	@When("User Search Certificate by student name")
 	public void user_search_certificate_by_student_name() {
-		swipeabove(DeviceSessionManager.getDriver());
+		MobileswipeUp(DeviceSessionManager.getDriver());
 		visibilityWait(DeviceSessionManager.getDriver(), cert.Search);
 		sendKeys(DeviceSessionManager.getDriver(), cert.Search, "NEW STUDENT");
 	}
@@ -109,5 +116,42 @@ public class CertificateSteps extends BaseClass {
 		String expected = "New learner · Digital Marketing Sprint";
 		Assert.assertEquals(expected, actual);
 	}
+	//------------------------------------------------------------------------------------
+	
+	@Given("User is on Certificates page")
+	public void user_is_on_certificates_page() {
+
+	}
+
+	@When("User verifies Revoked certificates")
+	public void user_verifies_revoked_certificates() {
+	    String revokedcertificates = cert.revokeCount.getText();
+	}
+
+	@Then("User verifies the Total revoked certificate count")
+	public void user_verifies_the_total_revoked_certificate_count() {
+	
+	}
+	//public int[] countRowsBySwiping() {
+//	    Set<String> all = new HashSet<>();
+//	    Set<String> revoked = new HashSet<>();
+//	    int noNew = 0;
+//	    for (int i = 0; i < 200 && noNew < 2; i++) { 
+//	        int before = all.size();
+//	        By driver = null;
+//			for (WebElement e : driver.findElements(cert.certID)) {
+//	            try { all.add(e.getText().trim()); } catch (StaleElementReferenceException ignored) { }
+//	        }
+//	        for (WebElement s : driver.findElements(cert.revokedStatus)) {
+//	            try { revoked.add(s.findElement(By.xpath(cert.toString())).getText().trim()); }
+//	            catch (StaleElementReferenceException ignored) { }
+//	        }
+//	        noNew = (all.size() == before) ? noNew + 1 : 0;
+//	        MobileswipeUp(DeviceSessionManager.getDriver());
+//	    }
+//	    return new int[]{all.size(), revoked.size()};
+//	}
 
 }
+
+
