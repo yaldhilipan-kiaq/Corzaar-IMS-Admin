@@ -1,6 +1,7 @@
 package com.stepdefinitions;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -116,8 +117,8 @@ public class CertificateSteps extends BaseClass {
 		String expected = "New learner · Digital Marketing Sprint";
 		Assert.assertEquals(expected, actual);
 	}
-	//------------------------------------------------------------------------------------
-	
+	// ------------------------------------------------------------------------------------
+
 	@Given("User is on Certificates page")
 	public void user_is_on_certificates_page() {
 
@@ -125,33 +126,53 @@ public class CertificateSteps extends BaseClass {
 
 	@When("User verifies Revoked certificates")
 	public void user_verifies_revoked_certificates() {
-	    String revokedcertificates = cert.revokeCount.getText();
+		int expected = Integer.parseInt(cert.revokeCount.getText().replaceAll("[^0-9]", ""));
+		System.out.println("revoked count " + expected);
 	}
 
 	@Then("User verifies the Total revoked certificate count")
 	public void user_verifies_the_total_revoked_certificate_count() {
-	
+		int displayedCount = getDisplayedCount();
+		int actualCount = getTotalCoursesBySwiping();
+
+		System.out.println("Displayed: " + displayedCount + " | Actual: " + actualCount);
+		Assert.assertEquals("Revoked count mismatch", displayedCount, actualCount);
 	}
-	//public int[] countRowsBySwiping() {
-//	    Set<String> all = new HashSet<>();
-//	    Set<String> revoked = new HashSet<>();
-//	    int noNew = 0;
-//	    for (int i = 0; i < 200 && noNew < 2; i++) { 
-//	        int before = all.size();
-//	        By driver = null;
-//			for (WebElement e : driver.findElements(cert.certID)) {
-//	            try { all.add(e.getText().trim()); } catch (StaleElementReferenceException ignored) { }
-//	        }
-//	        for (WebElement s : driver.findElements(cert.revokedStatus)) {
-//	            try { revoked.add(s.findElement(By.xpath(cert.toString())).getText().trim()); }
-//	            catch (StaleElementReferenceException ignored) { }
-//	        }
-//	        noNew = (all.size() == before) ? noNew + 1 : 0;
-//	        MobileswipeUp(DeviceSessionManager.getDriver());
-//	    }
-//	    return new int[]{all.size(), revoked.size()};
-//	}
+
+	private int getDisplayedCount() {
+		String text = cert.revokeCount.getText();
+		return Integer.parseInt(text.replaceAll("[^0-9]", ""));
+	}
+
+	private int getTotalCoursesBySwiping() {
+		Set<String> allRevoked = new HashSet<>();
+		int swipesWithNoNewRevoked = 0;
+
+		while (swipesWithNoNewRevoked < 3) {
+			int countBefore = allRevoked.size();
+
+			for (WebElement card : cert.revokedCertificatestotal) {
+				try {
+					String id = card.findElement(By.xpath(
+							"./ancestor::android.view.ViewGroup[.//android.widget.TextView[starts-with(@text,'CZ-CERT')]][1]"
+									+ "//android.widget.TextView[starts-with(@text,'CZ-CERT')]"))
+							.getText().trim();
+					allRevoked.add(id);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+
+			}
+
+			if (allRevoked.size() == countBefore) {
+				swipesWithNoNewRevoked++;
+			} else {
+				swipesWithNoNewRevoked = 0;
+			}
+			MobileswipeUp(DeviceSessionManager.getDriver());
+		}
+		System.out.println("Total courses found: " + allRevoked.size());
+		return allRevoked.size();
+	}
 
 }
-
-

@@ -1,6 +1,7 @@
 package com.pages;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
@@ -49,11 +50,11 @@ public class CertificatePage {
 	@AndroidFindBy(uiAutomator = "new UiSelector().text(\"Certificates\")")
 	public WebElement certificate;
 	
-	@AndroidFindBy(xpath = "//*[contains(@text,'37')]")
+	@AndroidFindBy(xpath = "//android.view.ViewGroup[.//android.widget.TextView[@text='Revoked']]/android.widget.TextView[9]")
 	public WebElement revokeCount;
 	
-	@AndroidFindBy(xpath = "//*[contains(@text,'revoked')]")
-	public WebElement revokedCertificatestotal;
+	@AndroidFindBy(xpath = "(//android.widget.TextView[@text=\"revoked\"])")
+	public List<WebElement> revokedCertificatestotal;
 	
 	@AndroidFindBy(uiAutomator = "new UiSelector().text(\"Payouts\")")
 	public WebElement payout;
@@ -80,6 +81,9 @@ public class CertificatePage {
 	public WebElement certID;
 	@AndroidFindBy(xpath = "./ancestor::android.view.ViewGroup[.//android.widget.TextView[contains(@text,'CERT-')]][1]"+ "//android.widget.TextView[contains(@text,'CERT-')]\"")
 	public WebElement rowID;
+	
+	@AndroidFindBy(xpath = "//android.widget.TextView[contains(@text,'Revoked')]")
+	public WebElement Revoked;
 	
 	
 	//android.widget.TextView[@text='Revoked']/preceding-sibling::android.widget.TextView[15]
